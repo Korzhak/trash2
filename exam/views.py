@@ -1,6 +1,6 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
-from rest_framework.mixins import RetrieveModelMixin
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.decorators import api_view
 from .models import Student, Task
 from .serializer import (
@@ -13,9 +13,11 @@ from .serializer import (
 )
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 
-class TaskView(RetrieveModelMixin,
+
+class TaskView(ListModelMixin,
                GenericViewSet):
 
     queryset = Task.objects.all()
@@ -51,7 +53,7 @@ class Student2LevelView(RetrieveModelMixin,
 
         if not instance.level_2:
             instance.level_2 = True
-            instance.score += 20
+            instance.score += 10
             instance.save(update_fields=["level_2", "score"])
 
         serializer = self.get_serializer(instance)
@@ -69,7 +71,7 @@ class Student3LevelView(RetrieveModelMixin,
 
         if not instance.level_3:
             instance.level_3 = True
-            instance.score += 30
+            instance.score += 10
             instance.save(update_fields=["level_3", "score"])
 
         serializer = self.get_serializer(instance)
@@ -100,19 +102,68 @@ class Student4LevelView(RetrieveModelMixin,
 def reciver(request):
 
     if request.method == 'GET':
-        print(request.GET)
-        student = Student.object.get(key=826)
-        print(student)
-        return Response({'method': 'GET'})
+        try:
+            user = request.GET["user"]
+            student = Student.objects.get(key=user)
+            if not student.level_4:
+                student.level_4 = True
+                student.score += 20
+                student.save(update_fields=["level_4", "score"])
+                
+        except:
+            content = {'error_message': 'даний ключ для запиту або запитуємий користувач не існує'}
+            return Response(content, status=status.HTTP_404_NOT_FOUND)
+        return Response({'score': student.score,'next_hint': student.hint_4_level, 'special_data': student.special_data})
 
     elif request.method == 'POST':
         print(request.data)
-        return Response({'method': 'POST'})
+        try:
+            user = request.data["user"]
+            student = Student.objects.get(key=user)
+            if not student.level_5:
+                student.level_5 = True
+                student.score += 20
+                student.save(update_fields=["level_5", "score"])
+            student.special_data = request.data["special_data"]
+            student.save(update_fields=["special_data"])
 
-    elif request.method == "PUT":
-        return Response({'method': 'PUT'})
+        except:
+            content = {'error_message': 'даний ключ для запиту або запитуємий користувач не існує'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+                
+        return Response({'score': student.score,'next_hint': student.hint_5_level, 'special_data': student.special_data})
+
 
     elif request.method == "DELETE":
-        return Response({'method': 'DELETE'})
+        try:
+            user = request.data["user"]
+            student = Student.objects.get(key=user)
+            if not student.level_6:
+                student.level_6 = True
+                student.score += 30
+                student.save(update_fields=["level_6", "score"])
+            student.special_data = ""
+            student.save(update_fields=["special_data"])
+
+        except:
+            content = {'error_message': 'даний ключ для запиту або запитуємий користувач не існує'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'score': student.score,'next_hint': student.hint_6_level, 'special_data': student.special_data})
 
 
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def test(request):
+    if request.method == 'GET':
+        return Response({"method": "GET"})
+
+    if request.method == 'POST':
+        return Response({"method": "POST"})
+
+    if request.method == 'PUT':
+        return Response({"method": "PUT"})
+    
+    if request.method == 'DELETE':
+        return Response({"method": "DELETE"})
+        
