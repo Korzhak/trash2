@@ -42,6 +42,8 @@ class Student(models.Model):
     level_2 = models.BooleanField("L2 Done", default=False)
     level_3 = models.BooleanField("L3 Done", default=False)
     level_4 = models.BooleanField("L4 Done", default=False)
+    level_5 = models.BooleanField("L5 Done", default=False)
+    level_6 = models.BooleanField("L6 Done", default=False)
 
     hint_1_level = models.TextField("Hint in 1 level", default="",
                                     max_length=500)
@@ -49,9 +51,15 @@ class Student(models.Model):
                                     max_length=500)
     hint_3_level = models.TextField("Hint in 3 level", default="",
                                     max_length=500)
+
     hint_4_level = models.TextField("Hint in 4 level", default="",
                                     max_length=500)
+    hint_5_level = models.TextField("Hint in 5 level", default="",
+                                    max_length=500)
+    hint_6_level = models.TextField("Hint in 6 level", default="", 
+                                    max_length=500)
 
+    special_data = models.CharField("Special data", blank=True, max_length=100)
     joke = models.TextField("Joke", blank=True)
 
     def __str__(self):

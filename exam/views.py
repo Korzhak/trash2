@@ -96,14 +96,23 @@ class Student4LevelView(RetrieveModelMixin,
 
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def reciver(request):
 
     if request.method == 'GET':
-        return Response({'something': 'my custom JSON'})
+        print(request.GET)
+        student = Student.object.get(key=826)
+        print(student)
+        return Response({'method': 'GET'})
 
     elif request.method == 'POST':
         print(request.data)
-        return Response({'something': 'my custom JSON'})
+        return Response({'method': 'POST'})
+
+    elif request.method == "PUT":
+        return Response({'method': 'PUT'})
+
+    elif request.method == "DELETE":
+        return Response({'method': 'DELETE'})
 
 
